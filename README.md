@@ -32,4 +32,4 @@ nasm -f bin -g -O0 -o C:\Users\win10\Desktop\pic_implant\bin\main.bin src\main.a
    ```asm
        db "192.168.8.128", 0
        mov word [rsp+2], 0x5C11       ; ← 4444 (change this too)
-  ```
+   ```
