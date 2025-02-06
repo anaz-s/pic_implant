@@ -1,6 +1,6 @@
 # 🚀 x64 PIC Reverse Shell (BETA AF)
 
-A **position-independent** reverse shell shellcode i put together for x64 systems. It works (tested on Windows 10), I built this sleep deprived and it's definitely a rough draft but expect cleaner code/docs soon.
+A **position-independent** reverse shell shellcode i put together for x64 systems. It works (tested on Windows 10), I built this while sleep deprived and it's definitely a rough draft but expect cleaner code/docs soon.
 ---
 
 ### 🔥 Features (Kinda)
