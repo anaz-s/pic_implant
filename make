@@ -3,7 +3,7 @@ NASM = nasm
 NASM_FLAGS = -f bin
 
 SRC_FILES = src\main.asm
-BIN_FILE = Desktop\pic_implant\bin\main.bin
+BIN_FILE = .\pic_implant\bin\main.bin
 
 all: $(BIN_FILE)
 
